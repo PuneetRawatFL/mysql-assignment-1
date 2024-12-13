@@ -1,0 +1,115 @@
+1. Tasks (Primary Key Assignment):
+
+Create the Students table with student_id as the primary key.
+Insert 5 records into the table.
+Try to insert a duplicate student_id. Observe and explain the error.
+
+//creating table
+mysql> create table Students(student_id int, name varchar(20), PRIMARY KEY(student_id));
+
+//inserting records
+mysql> insert into Students values(1, "Alice");
+mysql> insert into Students values(1, "Alice");
+mysql> insert into Students values(2, "Bob");
+mysql> insert into Students values(3, "Charlie");
+mysql> insert into Students values(4, "Dane");
+mysql> insert into Students values(5, "Ellen");
+
+//entering duplicate value
+mysql> insert into Students values(3, "Fred");
+ERROR 1062 (23000): Duplicate entry '3' for key 'students.PRIMARY'
+
+explaination - this error occurs because in Students table, the student_id is a primary key which is unique for every record. so when we try to enter any duplicate value it generates an error and prevents entering duplicate value for the primary key. primary key is also used to fetch unique records.
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+2. Tasks (Unique Key Assignment):
+
+Alter the Students table to make the email column unique.
+Try to insert two records with the same email and observe the behavior.
+Write a query to check all unique emails in the table.
+
+//altering table to add email column
+mysql> alter table Students add column email varchar(50);
+
+//inserting two records with same email 
+mysql> insert into Students values(6, "Fred", "fred@gmail.com");
+mysql> insert into Students values(7, "Gramm", "fred@gmail.com");
+
+//checking unique emails
+mysql> select distinct(email) from Students;
++-------------------+
+| email             |
++-------------------+
+| Alice@gmail.com   |
+| Bob@gmail.com     |
+| Charlie@gmail.com |
+| Dane@gmail.com    |
+| Ellen@gmail.com   |
+| fred@gmail.com    |
++-------------------+
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+3. Tasks (Indexing Assignment):
+
+Create the Books table.
+Add an index on the author column.
+    Write a query to find all books by a specific author (e.g., 'J.K. Rowling').
+    Explain how indexing improves performance in this query.
+
+//creating table Books
+mysql> create table Books (id int, name varchar(100), author varchar (100));
+
+//adding index
+mysql> create index indxAuthor on Books(author);
+
+//explaination - When we create an index on the author column, MySQL can quickly locate the rows that match the search criteria without scanning the entire table
+Without an index, MySQL performs a full table scan, examining each row to find matches for the query which can result in slow performance in larger tables;
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+4. Tasks (Views Assignment):
+
+Create the StudentInfo view.
+Write a query to select all data from the StudentInfo view.
+Update a student’s email in the Students table and show how it reflects in the StudentInfo view.
+
+//creating view
+mysql> create view StudentInfo as select * from students;
+Query OK, 0 rows affected (0.02 sec)
+
+//query to select all datamysql> select * from StudentInfo;
++------------+---------+-------------------+
+| student_id | name    | email             |
++------------+---------+-------------------+
+|          1 | Alice   | Alice@gmail.com   |
+|          2 | Bob     | Bob@gmail.com     |
+|          3 | Charlie | Charlie@gmail.com |
+|          4 | Dane    | Dane@gmail.com    |
+|          5 | Ellen   | Ellen@gmail.com   |
+|          6 | Fred    | fred@gmail.com    |
+|          7 | Gramm   | fred@gmail.com    |
++------------+---------+-------------------+
+7 rows in set (0.00 sec)
+
+//changing email field 
+mysql> update students set email = "Gramm@gmail.com" where student_id = 7;
+Query OK, 1 row affected (0.01 sec)
+
+//checking StudentInfo view for changes
+mysql> select * from StudentInfo;
++------------+---------+-------------------+
+| student_id | name    | email             |
++------------+---------+-------------------+
+|          1 | Alice   | Alice@gmail.com   |
+|          2 | Bob     | Bob@gmail.com     |
+|          3 | Charlie | Charlie@gmail.com |
+|          4 | Dane    | Dane@gmail.com    |
+|          5 | Ellen   | Ellen@gmail.com   |
+|          6 | Fred    | fred@gmail.com    |
+|          7 | Gramm   | Gramm@gmail.com   |
++------------+---------+-------------------+
+7 rows in set (0.00 sec)
+
+the record gets updated because a view stores the query and executes everytime we run the view. view does not store any data, it creates a virtual table using the underlying query
